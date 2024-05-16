@@ -1,0 +1,4 @@
+package parser
+
+func foo() {
+}
