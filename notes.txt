@@ -7,3 +7,35 @@ https://www.geeksforgeeks.org/introduction-of-lexical-analysis/
 	    Output generation: In this final stage, the lexer generates the output of the lexical analysis process, which is typically a list of tokens. This list of tokens can then be passed to the next stage of compilation or interpretation.
 
 This is essentially a transpiler that works at a project level
+
+
+class Token {
+  final TokenType type;
+  final String lexeme;
+  final Object literal;
+  final int line; 
+
+  Token(TokenType type, String lexeme, Object literal, int line) {
+    this.type = type;
+    this.lexeme = lexeme;
+    this.literal = literal;
+    this.line = line;
+  }
+
+  public String toString() {
+    return type + " " + lexeme + " " + literal;
+  }
+}
+
+  private char advance() {
+    return source.charAt(current++);
+  }
+
+  private void addToken(TokenType type) {
+    addToken(type, null);
+  }
+
+  private void addToken(TokenType type, Object literal) {
+    String text = source.substring(start, current);
+    tokens.add(new Token(type, text, literal, line));
+  }
