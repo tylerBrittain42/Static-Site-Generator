@@ -3,42 +3,68 @@ package lexer
 import (
 	"fmt"
 	"testing"
-
-	"github.com/tylerBrittain42/Static-Site-Generator/pkg/lexer"
 )
 
-type tokenType int
+func TestGetToken(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected token
+	}{
+		{"#", token{h1, "#", 0}},
+		{"this is a", token{literal, "this is a ", 0}},
+		{"**", token{bold, "**", 0}},
+		{"heading\n", token{literal, "heading", 0}},
+		{"**", token{bold, "**", 0}},
+		{"\n", token{newLine, "\n", 0}},
+	}
 
-const (
-	h1 tokenType = iota
-	h2
-	h3
-	h4
-	h5
-	h6
-	ol
-	ul
-	p
-	br
-)
-
-type token struct {
-	category   tokenType
-	value      string
-	innerToken *token // use this to handle inline?
+	fmt.Println("\nTest TestGetNextToken")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.input)
+		t.Run(testname, func(t *testing.T) {
+			actualToken, err := getToken(tt.input)
+			if err != nil {
+				t.Errorf("encountered error message %s", err)
+			}
+			if actualToken != tt.expected {
+				t.Errorf("got %s,  wanted %s", actualToken.value, tt.expected.value)
+			}
+		})
+	}
 }
 
-// TODO: implement me
-func tokenOutput() string {
-	return ""
+/*
+func TestGetNextToken(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected token
+	}{
+		{"# this is a **heading**\n", token{h1, "#", 0}},
+		{"this is a **heading**\n", token{literal, "this is a ", 0}},
+		{"**heading**\n", token{bold, "**", 0}},
+		{"heading**\n", token{literal, "heading", 0}},
+		{"**\n", token{bold, "**", 0}},
+		{"\n", token{newLine, "\n", 0}},
+	}
+
+	fmt.Println("\nTest TestGetNextToken")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.input)
+		fmt.Println(testname)
+	}
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.input)
+		t.Run(testname, func(t *testing.T) {
+			actualToken := getNextToken(tt.input)
+			if actualToken != tt.expected {
+				t.Errorf("got %s,  wanted %s", actualToken.value, tt.expected.value)
+			}
+		})
+	}
 }
+*/
 
-// TODO: implement me
-func (*token) equals() bool {
-	return false
-
-}
-
+/*
 // Simple meaning a single line with no inline
 func TestGetTokenLineSimple(t *testing.T) {
 	tests := []struct {
@@ -63,7 +89,7 @@ func TestGetTokenLineSimple(t *testing.T) {
 	for _, tt := range tests {
 		testname := fmt.Sprintf("input: %s", tt.input)
 		t.Run(testname, func(t *testing.T) {
-			actualToken := lexer.getToken(tt.input)
+			actualToken := getToken(tt.input)
 			// TODO: check if I can do a simple compare
 			if actualToken != tt.expected {
 				t.Errorf("got %s,  wanted %s", tokenOutput(), tokenOutput())
@@ -71,6 +97,7 @@ func TestGetTokenLineSimple(t *testing.T) {
 		})
 	}
 }
+*/
 
 // Complex meaning a single line with inline
 func TestGetTokenLineComplex(t *testing.T) {
