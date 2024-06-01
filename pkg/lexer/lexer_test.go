@@ -3,7 +3,6 @@ package lexer
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"path"
 	"testing"
 )
@@ -24,13 +23,7 @@ func TestScanFile(t *testing.T) {
 		testname := fmt.Sprintf("input: %s", tt.input)
 		t.Run(testname, func(t *testing.T) {
 			filePath := path.Join("testCases", tt.input)
-			_, err := os.Open(filePath)
-			if err != nil {
-				t.Errorf("Unable to open filePath %s", err)
-			}
-
-			// actualOutput, err := getFileContents(testLocation)
-			actualOutput := []byte("sadf")
+			actualOutput, err := getFileContents(filePath)
 			if err != nil {
 				t.Errorf("encountered error message %s", err)
 			}

@@ -1,6 +1,6 @@
 package lexer
 
-import ()
+import "os"
 
 type tokenType int
 
@@ -30,6 +30,28 @@ type locationInfo struct {
 	column int
 	row    int
 	len    int
+}
+
+func getFileContents(filePath string) ([]byte, error) {
+	// opening(and closing) the file
+	f, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	// reading the file
+	fStat, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	b := make([]byte, fStat.Size())
+	f.Read(b)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+
 }
 
 /*
