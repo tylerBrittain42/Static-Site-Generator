@@ -20,16 +20,16 @@ const (
 	newLine
 )
 
-type Token struct {
-	category   tokenType
+type token struct {
+	TokenType  tokenType
 	value      string
-	lineNumber int
+	line       int
+	startIndex int
+	len        int
 }
 
-type locationInfo struct {
-	column int
-	row    int
-	len    int
+type scannerInfo struct {
+	curIndex int
 }
 
 func getFileContents(filePath string) ([]byte, error) {
@@ -46,12 +46,15 @@ func getFileContents(filePath string) ([]byte, error) {
 		return nil, err
 	}
 	b := make([]byte, fStat.Size())
-	f.Read(b)
+	_, err = f.Read(b)
 	if err != nil {
 		return nil, err
 	}
 	return b, nil
+}
 
+func getNextToken(b *[]byte, startingIndex int) (token, error) {
+	return token{}, nil
 }
 
 /*

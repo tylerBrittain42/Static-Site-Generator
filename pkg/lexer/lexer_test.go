@@ -34,35 +34,44 @@ func TestScanFile(t *testing.T) {
 	}
 }
 
-/*
-func TestGetLexme(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected token
-	}{
-		{"#", token{h1, "#", 0}},
-		{"this is a", token{literal, "this is a ", 0}},
-		{"**", token{bold, "**", 0}},
-		{"heading\n", token{literal, "heading", 0}},
-		{"**", token{bold, "**", 0}},
-		{"\n", token{newLine, "\n", 0}},
+//	type token struct {
+//		TokenType  tokenType
+//		value      string
+//		line       int
+//		startIndex int
+//		len        int
+//	}
+//
+// Parsing to get the next lexme from a string
+func TestGetNextToken(t *testing.T) {
+	testInput := []byte("# This is **bold**\n")
+	testOutput := []token{
+		{h1, "#", 0, 0, 1},
+		{literal, "This is ", 0, 2, 8},
+		{bold, "**", 0, 10, 2},
+		{literal, "bold", 0, 12, 2},
+		{bold, "**", 0, 16, 2},
+		{newLine, "\n", 0, 18, 1},
 	}
 
 	fmt.Println("\nTest TestGetNextToken")
-	for _, tt := range tests {
-		testname := fmt.Sprintf("input: %s", tt.input)
+	lastIndex := 0
+	lastLength := 0
+	for _, expectedToken := range testOutput {
+		testname := fmt.Sprintf("input: %s", "getNextToken")
 		t.Run(testname, func(t *testing.T) {
-			actualToken, err := getToken(tt.input)
+			nextStart := lastIndex + lastLength
+			actualToken, err := getNextToken(&testInput, nextStart)
 			if err != nil {
 				t.Errorf("encountered error message %s", err)
 			}
-			if actualToken != tt.expected {
-				t.Errorf("got %s,  wanted %s", actualToken.value, tt.expected.value)
+			if actualToken != expectedToken {
+				t.Errorf("got %s,  wanted %s", actualToken.value, expectedToken.value)
 			}
-		})
+		},
+		)
 	}
 }
-*/
 
 /*
 func TestGetNextToken(t *testing.T) {
