@@ -53,7 +53,22 @@ func getFileContents(filePath string) ([]byte, error) {
 	return b, nil
 }
 
+//	type token struct {
+//		TokenType  tokenType
+//		value      string
+//		line       int
+//		startIndex int
+//		len        int
+//	}
+
 func getNextToken(b *[]byte, startingIndex int) (token, error) {
+	stream := byteSlice{*b, 0, 0}
+	for i, v := range byteSlice.s {
+		lexme := stream.getNextLexme()
+		// make token here
+
+	}
+
 	return token{}, nil
 }
 
