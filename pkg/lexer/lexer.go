@@ -1,8 +1,6 @@
 package lexer
 
-import (
-	"fmt"
-)
+import ()
 
 type tokenType int
 
@@ -22,10 +20,31 @@ const (
 	newLine
 )
 
-type token struct {
+type Token struct {
 	category   tokenType
 	value      string
 	lineNumber int
+}
+
+type locationInfo struct {
+	column int
+	row    int
+	len    int
+}
+
+/*
+func Scan(b *[]byte) ([]Token, error) {
+	location := locationInfo{0, 0, 0}
+	for i := 0; i < len(*b); {
+		location.scanToken()
+
+	}
+	return []Token{}, nil
+
+}
+
+func (*locationInfo) scanToken() (string, err) {
+	return "foo", nil
 }
 
 // {"# this is a **heading**\n", token{h1, "#", 0}},
@@ -39,12 +58,12 @@ func getNextToken(input string) (token, error) {
 // TODO: how to handle paragraphs
 func getToken(input string, startOfLine bool) (token, error) {
 	// TODO: grab until first space
-	if startOfLine{
+	if startOfLine {
 		var tokenType string
 		headerCount = 0
-		for i, v := range(input) {
+		for i, v := range input {
 			if v == "#" {
-			} 
+			}
 		}
 
 	} else {
@@ -56,9 +75,6 @@ func getToken(input string, startOfLine bool) (token, error) {
 
 	}
 
-
-
-	
-	switch token()
 	return token{}, nil
 }
+*/

@@ -1,11 +1,48 @@
 package lexer
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"path"
 	"testing"
 )
 
-func TestGetToken(t *testing.T) {
+// Verify that entire file gets stored into a single rune array
+// note: don't forget about escape characters when working with this portion
+func TestScanFile(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected []byte
+	}{
+		{"singleLine.md", []byte("# this is a **heading**\n")},
+		{"multiLine.md", []byte("# this is a **heading**\n## and this is the body\n")},
+	}
+
+	fmt.Println("\nTest ScanFile")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.input)
+		t.Run(testname, func(t *testing.T) {
+			filePath := path.Join("testCases", tt.input)
+			_, err := os.Open(filePath)
+			if err != nil {
+				t.Errorf("Unable to open filePath %s", err)
+			}
+
+			// actualOutput, err := getFileContents(testLocation)
+			actualOutput := []byte("sadf")
+			if err != nil {
+				t.Errorf("encountered error message %s", err)
+			}
+			if !bytes.Equal(actualOutput, tt.expected) {
+				t.Errorf("got %s,  wanted %s", actualOutput, tt.expected)
+			}
+		})
+	}
+}
+
+/*
+func TestGetLexme(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected token
@@ -32,6 +69,7 @@ func TestGetToken(t *testing.T) {
 		})
 	}
 }
+*/
 
 /*
 func TestGetNextToken(t *testing.T) {
