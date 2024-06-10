@@ -33,7 +33,6 @@ func TestAdd(t *testing.T) {
 	}
 }
 
-// func (b *byteSlice) Peak() (byte, error){
 func TestPeak(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -93,6 +92,51 @@ func TestGet(t *testing.T) {
 				}
 				if string(actualPeak) != tt.expected {
 					t.Errorf("Expected %s, but got %s", tt.expected, string(actualPeak))
+				}
+
+				// error is expected
+			} else if actualErr.Error() != tt.expectedErr {
+				t.Errorf("got %s,  wanted %s", actualErr.Error(), tt.expectedErr)
+			}
+		})
+	}
+}
+
+// // reset for next token. returns int of next index and error
+// func (b *byteSlice) SetNext() (int, error) {
+// 	nextIndex := b.startingIndex + b.length + 1
+// 	if nextIndex >= len(b.s) {
+// 		return 0, errors.New("Out of bounds")
+// 	}
+// 	b.startingIndex = b.startingIndex + b.length
+// 	b.length = 0
+// 	return b.startingIndex, nil
+// }
+
+func TestSetNext(t *testing.T) {
+	inputString := []byte("this is a test")
+	tests := []struct {
+		name        string
+		input       byteSlice
+		expected    int
+		expectedErr string
+	}{
+		{"Valid condition", byteSlice{inputString, 0, 1}, 1, ""},
+		{"Out of bounds", byteSlice{inputString, 0, len(inputString)}, 0, "Out of bounds"},
+	}
+	fmt.Println("Test Get")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.name)
+		t.Run(testname, func(t *testing.T) {
+			nextIndex, actualErr := tt.input.SetNext()
+
+			// error is not expected
+			if tt.expectedErr == "" {
+				if actualErr != nil {
+					t.Errorf("Expected nil, but got error %s", actualErr.Error())
+				}
+				if nextIndex != tt.expected {
+					t.Errorf("Expected %v, but got %v", tt.expected, nextIndex)
 				}
 
 				// error is expected
