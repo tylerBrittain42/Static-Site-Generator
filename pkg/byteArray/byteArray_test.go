@@ -1,48 +1,153 @@
-package lexer
+package byteArray
 
 import (
-	"bytes"
 	"fmt"
-	"path"
 	"testing"
 )
 
-// Verify that entire file gets stored into a single rune array
-// note: don't forget about escape characters when working with this portion
-func TestScanFile(t *testing.T) {
+func TestAdd(t *testing.T) {
 	tests := []struct {
-		input    string
-		expected []byte
+		name   string
+		input  byteSlice
+		output string
 	}{
-		{"singleLine.md", []byte("# this is a **heading**\n")},
-		{"multiLine.md", []byte("# this is a **heading**\n## and this is the body\n")},
+		{"In bounds", byteSlice{[]byte("this"), 0, 0}, ""},
+		{"Out of bounds", byteSlice{[]byte("this"), 0, 3}, "length will be out of bounds"},
 	}
-
-	fmt.Println("\nTest ScanFile")
+	fmt.Println("Test Add")
 	for _, tt := range tests {
-		testname := fmt.Sprintf("input: %s", tt.input)
+		testname := fmt.Sprintf("input: %s", tt.name)
 		t.Run(testname, func(t *testing.T) {
-			filePath := path.Join("testCases", tt.input)
-			actualOutput, err := getFileContents(filePath)
-			if err != nil {
-				t.Errorf("encountered error message %s", err)
-			}
-			if !bytes.Equal(actualOutput, tt.expected) {
-				t.Errorf("got %s,  wanted %s", actualOutput, tt.expected)
+			actualOutput := tt.input.Add()
+
+			// error is not expected
+			if tt.output == "" {
+				if actualOutput != nil {
+					t.Errorf("Expected nil, but got error %s", actualOutput.Error())
+				}
+				// error is expected
+			} else if actualOutput.Error() != tt.output {
+				t.Errorf("got %s,  wanted %s", actualOutput, tt.output)
 			}
 		})
 	}
 }
 
-//	type token struct {
-//		TokenType  tokenType
-//		value      string
-//		line       int
-//		startIndex int
-//		len        int
-//	}
-//
-// Parsing to get the next lexme from a string
+func TestPeak(t *testing.T) {
+	tests := []struct {
+		name         string
+		input        byteSlice
+		expectedPeak byte
+		expectedErr  string
+	}{
+		{"In bounds", byteSlice{[]byte("this"), 0, 0}, 'h', ""},
+		{"Out of bounds", byteSlice{[]byte("this"), 0, 3}, 0, "length+1 will be out of bounds"},
+	}
+	fmt.Println("Test Add")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.name)
+		t.Run(testname, func(t *testing.T) {
+			actualPeak, actualErr := tt.input.Peak()
+
+			// error is not expected
+			if tt.expectedErr == "" {
+				if actualErr != nil {
+					t.Errorf("Expected nil, but got error %s", actualErr.Error())
+				}
+				if actualPeak != tt.expectedPeak {
+					t.Errorf("Expected %c, but got %c", tt.expectedPeak, actualPeak)
+				}
+
+				// error is expected
+			} else if actualErr.Error() != tt.expectedErr {
+				t.Errorf("got %s,  wanted %s", actualErr.Error(), tt.expectedErr)
+			}
+		})
+	}
+}
+
+func TestGet(t *testing.T) {
+	inputString := []byte("this is a test")
+	tests := []struct {
+		name        string
+		input       byteSlice
+		expected    string
+		expectedErr string
+	}{
+		{"Entire slice", byteSlice{inputString, 0, len(inputString)}, string(inputString), ""},
+		{"Entire slice(single char)", byteSlice{inputString, 0, 1}, "t", ""},
+		{"Sub slice(multiple char)", byteSlice{inputString, 1, 3}, "his", ""},
+		{"Empty slice", byteSlice{inputString, 1, 0}, "", "attempted to return empty string"},
+	}
+	fmt.Println("Test Get")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.name)
+		t.Run(testname, func(t *testing.T) {
+			actualPeak, actualErr := tt.input.Get()
+
+			// error is not expected
+			if tt.expectedErr == "" {
+				if actualErr != nil {
+					t.Errorf("Expected nil, but got error %s", actualErr.Error())
+				}
+				if string(actualPeak) != tt.expected {
+					t.Errorf("Expected %s, but got %s", tt.expected, string(actualPeak))
+				}
+
+				// error is expected
+			} else if actualErr.Error() != tt.expectedErr {
+				t.Errorf("got %s,  wanted %s", actualErr.Error(), tt.expectedErr)
+			}
+		})
+	}
+}
+
+// // reset for next token. returns int of next index and error
+// func (b *byteSlice) SetNext() (int, error) {
+// 	nextIndex := b.startingIndex + b.length + 1
+// 	if nextIndex >= len(b.s) {
+// 		return 0, errors.New("Out of bounds")
+// 	}
+// 	b.startingIndex = b.startingIndex + b.length
+// 	b.length = 0
+// 	return b.startingIndex, nil
+// }
+
+func TestSetNext(t *testing.T) {
+	inputString := []byte("this is a test")
+	tests := []struct {
+		name        string
+		input       byteSlice
+		expected    int
+		expectedErr string
+	}{
+		{"Valid condition", byteSlice{inputString, 0, 1}, 1, ""},
+		{"Out of bounds", byteSlice{inputString, 0, len(inputString)}, 0, "Out of bounds"},
+	}
+	fmt.Println("Test Get")
+	for _, tt := range tests {
+		testname := fmt.Sprintf("input: %s", tt.name)
+		t.Run(testname, func(t *testing.T) {
+			nextIndex, actualErr := tt.input.SetNext()
+
+			// error is not expected
+			if tt.expectedErr == "" {
+				if actualErr != nil {
+					t.Errorf("Expected nil, but got error %s", actualErr.Error())
+				}
+				if nextIndex != tt.expected {
+					t.Errorf("Expected %v, but got %v", tt.expected, nextIndex)
+				}
+
+				// error is expected
+			} else if actualErr.Error() != tt.expectedErr {
+				t.Errorf("got %s,  wanted %s", actualErr.Error(), tt.expectedErr)
+			}
+		})
+	}
+}
+
+/*
 func TestGetNextToken(t *testing.T) {
 	testInput := []byte("# This is **bold**\n")
 	testOutput := []token{
